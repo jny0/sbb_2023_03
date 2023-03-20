@@ -1,5 +1,6 @@
 package com.mysite.sbb;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +18,9 @@ class SbbApplicationTests {
 	@Autowired
 	private QuestionRepository questionRepository;
 
-	@Test // 데이터 저장
+
+	@Test
+	@DisplayName("데이터 저장")
 	void testJpa() {
 		Question q1 = new Question();
 		q1.setSubject("sbb가 무엇인가요?");
@@ -32,7 +35,8 @@ class SbbApplicationTests {
 		this.questionRepository.save(q2);  // 두번째 질문 저장
 	}
 
-	@Test  // 데이터 조회 findAll
+	@Test
+	@DisplayName("데이터 조회 findAll")
 	void testJpa2() {
 		List<Question> all = this.questionRepository.findAll();
 		assertEquals(2, all.size());
@@ -41,7 +45,8 @@ class SbbApplicationTests {
 		assertEquals("sbb가 무엇인가요?", q.getSubject());
 	}
 
-	@Test // 데이터 조회 findById
+	@Test
+	@DisplayName("데이터 조회 findById")
 	void testJpa3() {
 		Optional<Question> oq = this.questionRepository.findById(1);
 		if(oq.isPresent()) {
@@ -50,26 +55,30 @@ class SbbApplicationTests {
 		}
 	}
 
-	@Test // 데이터 조회 findBySubject
+	@Test
+	@DisplayName("데이터 조회 findBySubject")
 	void testJpa4() {
 		Question q = this.questionRepository.findBySubject("sbb가 무엇인가요?");
 		assertEquals(1, q.getId());
 	}
 
-	@Test // 데이터 조회 findBySubjectAndContent
+	@Test
+	@DisplayName("데이터 조회 findBySubjectAndContent")
 	void testJpa5() {
 		Question q = this.questionRepository.findBySubjectAndContent("sbb가 무엇인가요?", "sbb에 대해서 알고 싶습니다.");
 		assertEquals(1, q.getId());
 	}
 
-	@Test // 데이터 조회 Like **
+	@Test
+	@DisplayName("데이터 조회  Like **")
 	void testJpa6() {
 		List<Question> qList = this.questionRepository.findBySubjectLike("sbb%");
 		Question q = qList.get(0);
 		assertEquals("sbb가 무엇인가요?", q.getSubject());
 	}
 
-	@Test // 데이터 수정
+	@Test
+	@DisplayName("데이터 수정")
 	void testJpa7() {
 		Optional<Question> oq = this.questionRepository.findById(1);
 		assertTrue(oq.isPresent()); //값이 true인지를 테스트
@@ -78,7 +87,8 @@ class SbbApplicationTests {
 		this.questionRepository.save(q);
 	}
 
-	@Test // 데이터 삭제
+	@Test
+	@DisplayName("데이터 삭제")
 	void testJpa8() {
 		assertEquals(2, this.questionRepository.count()); // 총 데이터의 수 확인
 
@@ -88,6 +98,5 @@ class SbbApplicationTests {
 		this.questionRepository.delete(q);
 		assertEquals(1, this.questionRepository.count()); // 삭제되었는지 확인. count=총 데이터의 수
 	}
-
 
 }
