@@ -1,5 +1,6 @@
 package com.mysite.sbb;
 
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,8 @@ class SbbApplicationTests {
 
 	@Autowired
 	private QuestionRepository questionRepository;
-
+	@Autowired
+	private AnswerRepository answerRepository;
 
 	@Test
 	@DisplayName("데이터 저장")
@@ -70,7 +72,7 @@ class SbbApplicationTests {
 	}
 
 	@Test
-	@DisplayName("데이터 조회  Like **")
+	@DisplayName("데이터 조회 Like **")
 	void testJpa6() {
 		List<Question> qList = this.questionRepository.findBySubjectLike("sbb%");
 		Question q = qList.get(0);
@@ -81,7 +83,7 @@ class SbbApplicationTests {
 	@DisplayName("데이터 수정")
 	void testJpa7() {
 		Optional<Question> oq = this.questionRepository.findById(1);
-		assertTrue(oq.isPresent()); //값이 true인지를 테스트
+		assertTrue(oq.isPresent()); // isPresent() => 객체가 값을 가지고 있다면 true, 없다면 false
 		Question q = oq.get();
 		q.setSubject("수정된 제목");
 		this.questionRepository.save(q);
@@ -97,6 +99,42 @@ class SbbApplicationTests {
 		Question q = oq.get();
 		this.questionRepository.delete(q);
 		assertEquals(1, this.questionRepository.count()); // 삭제되었는지 확인. count=총 데이터의 수
+	}
+
+	@Test
+	@DisplayName("답변 데이터 생성 후 저장 ")
+	void testJpaAnswer1() {
+		Optional<Question> oq = this.questionRepository.findById(2);
+		assertTrue(oq.isPresent());
+		Question q = oq.get();
+
+		Answer a = new Answer();
+		a.setContent("네 자동으로 생성됩니다.");
+		a.setQuestion(q); // 어떤 질문의 답변인지 알기 위해서 Question 객체가 필요함
+		a.setCreateDate(LocalDateTime.now());
+		this.answerRepository.save(a);
+	}
+
+	@Test
+	@DisplayName("답변 조회하기")
+	void testJpaAnswer2(){
+		Optional<Answer> oa = this.answerRepository.findById(1);
+		assertTrue(oa.isPresent());
+		Answer a = oa.get();
+		assertEquals(2, a.getQuestion().getId());
+	}
+	@Transactional
+	@Test
+	@DisplayName("질문에 달린 답변 찾기")
+	void testJpaAnswer3(){
+		Optional<Question> oq = this.questionRepository.findById(2);
+		assertTrue(oq.isPresent());
+		Question q = oq.get();
+
+		List<Answer> answerList = q.getAnswerList();
+
+		assertEquals(1, answerList.size());
+		assertEquals("네 자동으로 생성됩니다.", answerList.get(0).getContent());
 	}
 
 }
