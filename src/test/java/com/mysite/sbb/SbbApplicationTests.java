@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class SbbApplicationTests {
@@ -67,5 +68,26 @@ class SbbApplicationTests {
 		Question q = qList.get(0);
 		assertEquals("sbb가 무엇인가요?", q.getSubject());
 	}
+
+	@Test // 데이터 수정
+	void testJpa7() {
+		Optional<Question> oq = this.questionRepository.findById(1);
+		assertTrue(oq.isPresent()); //값이 true인지를 테스트
+		Question q = oq.get();
+		q.setSubject("수정된 제목");
+		this.questionRepository.save(q);
+	}
+
+	@Test // 데이터 삭제
+	void testJpa8() {
+		assertEquals(2, this.questionRepository.count()); // 총 데이터의 수 확인
+
+		Optional<Question> oq = this.questionRepository.findById(1);
+		assertTrue(oq.isPresent());
+		Question q = oq.get();
+		this.questionRepository.delete(q);
+		assertEquals(1, this.questionRepository.count()); // 삭제되었는지 확인. count=총 데이터의 수
+	}
+
 
 }
