@@ -4,6 +4,7 @@ import com.mysite.sbb.answer.Answer;
 import com.mysite.sbb.answer.AnswerRepository;
 import com.mysite.sbb.question.Question;
 import com.mysite.sbb.question.QuestionRepository;
+import com.mysite.sbb.question.QuestionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,9 @@ class SbbApplicationTests {
 	private QuestionRepository questionRepository;
 	@Autowired
 	private AnswerRepository answerRepository;
+
+	@Autowired
+	private QuestionService questionService;
 
 	@BeforeEach // 아래 메서드는 각 테스트케이스가 실행되기 전에 실행된다.
 	void beforeEach() {
@@ -61,7 +65,7 @@ class SbbApplicationTests {
 
 	@Test
 	@DisplayName("데이터 저장")
-	void testJpa1() {
+	void testJpa001() {
 		// 질문 1개 생성
 		Question q = new Question();
 		q.setSubject("세계에서 가장 부유한 국가가 어디인가요?");
@@ -74,7 +78,7 @@ class SbbApplicationTests {
 
 	@Test
 	@DisplayName("데이터 조회 findAll")
-	void testJpa2() {
+	void testJpa002() {
 		List<Question> all = this.questionRepository.findAll();
 		assertEquals(2, all.size());
 
@@ -84,7 +88,7 @@ class SbbApplicationTests {
 
 	@Test
 	@DisplayName("데이터 조회 findById")
-	void testJpa3() {
+	void testJpa003() {
 		Optional<Question> oq = this.questionRepository.findById(1);
 		if(oq.isPresent()) {
 			Question q = oq.get();
@@ -94,21 +98,21 @@ class SbbApplicationTests {
 
 	@Test
 	@DisplayName("데이터 조회 findBySubject")
-	void testJpa4() {
+	void testJpa004() {
 		Question q = this.questionRepository.findBySubject("sbb가 무엇인가요?");
 		assertEquals(1, q.getId());
 	}
 
 	@Test
 	@DisplayName("데이터 조회 findBySubjectAndContent")
-	void testJpa5() {
+	void testJpa005() {
 		Question q = this.questionRepository.findBySubjectAndContent("sbb가 무엇인가요?", "sbb에 대해서 알고 싶습니다.");
 		assertEquals(1, q.getId());
 	}
 
 	@Test
 	@DisplayName("데이터 조회 Like **")
-	void testJpa6() {
+	void testJpa006() {
 		List<Question> qList = this.questionRepository.findBySubjectLike("sbb%");
 		Question q = qList.get(0);
 		assertEquals("sbb가 무엇인가요?", q.getSubject());
@@ -116,7 +120,7 @@ class SbbApplicationTests {
 
 	@Test
 	@DisplayName("데이터 수정")
-	void testJpa7() {
+	void testJpa007() {
 		Optional<Question> oq = this.questionRepository.findById(1);
 		assertTrue(oq.isPresent()); // isPresent() => 객체가 값을 가지고 있다면 true, 없다면 false
 		Question q = oq.get();
@@ -126,7 +130,7 @@ class SbbApplicationTests {
 
 	@Test
 	@DisplayName("데이터 삭제")
-	void testJpa8() {
+	void testJpa008() {
 		assertEquals(2, this.questionRepository.count()); // 총 데이터의 수 확인
 
 		Optional<Question> oq = this.questionRepository.findById(1);
@@ -138,7 +142,7 @@ class SbbApplicationTests {
 
 	@Test
 	@DisplayName("답변 데이터 생성 후 저장 ")
-	void testJpaAnswer1() {
+	void testJpa009() {
 		Question q = this.questionRepository.findById(2).orElse(null);
 
 		Answer a = new Answer();
@@ -151,7 +155,7 @@ class SbbApplicationTests {
 
 	@Test
 	@DisplayName("답변 조회하기")
-	void testJpaAnswer2(){
+	void testJpa010(){
 		Optional<Answer> oa = this.answerRepository.findById(1);
 		assertTrue(oa.isPresent());
 		Answer a = oa.get();
@@ -160,7 +164,7 @@ class SbbApplicationTests {
 	@Transactional
 	@Test
 	@DisplayName("질문에 달린 답변 찾기")
-	void testJpaAnswer3(){
+	void testJpa011(){
 		Optional<Question> oq = this.questionRepository.findById(2);
 		assertTrue(oq.isPresent());
 		Question q = oq.get();
@@ -169,6 +173,16 @@ class SbbApplicationTests {
 
 		assertEquals(1, answerList.size());
 		assertEquals("네 자동으로 생성됩니다.", answerList.get(0).getContent());
+	}
+
+	@Test
+	@DisplayName("테스트 데이터 300개 생성")
+	void testJpa012() {
+		for (int i = 1; i <= 300; i++) {
+			String subject = String.format("테스트 데이터입니다:[%03d]", i);
+			String content = "내용무";
+			this.questionService.create(subject, content);
+		}
 	}
 
 }
