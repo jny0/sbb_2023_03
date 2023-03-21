@@ -23,7 +23,12 @@ public class Question {
     @Column(columnDefinition = "TEXT")
     private String content;
     private LocalDateTime createDate;
+
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
     // OneToMany 에는 직접객체초기화
     private List<Answer> answerList = new ArrayList<>();
+    public void addAnswer(Answer a) {
+        a.setQuestion(this);
+        answerList.add(a);
+    }
 }
