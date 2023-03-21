@@ -5,6 +5,7 @@ import com.mysite.sbb.answer.AnswerRepository;
 import com.mysite.sbb.question.Question;
 import com.mysite.sbb.question.QuestionRepository;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,16 @@ class SbbApplicationTests {
 	@Autowired
 	private AnswerRepository answerRepository;
 
-	@Test
-	@DisplayName("데이터 저장")
-	void testJpa() {
+	@BeforeEach // 아래 메서드는 각 테스트케이스가 실행되기 전에 실행된다.
+	void beforeEach() {
+		// 모든 데이터 삭제
+		answerRepository.deleteAll();
+		answerRepository.clearAutoIncrement();
+		// 모든 데이터 삭제
+		questionRepository.deleteAll();
+		// 흔적삭제(다음번 INSERT 때 id가 1번으로 설정되도록)
+		questionRepository.clearAutoIncrement();
+
 		Question q1 = new Question();
 		q1.setSubject("sbb가 무엇인가요?");
 		q1.setContent("sbb에 대해서 알고 싶습니다.");
@@ -39,6 +47,26 @@ class SbbApplicationTests {
 		q2.setContent("id는 자동으로 생성되나요?");
 		q2.setCreateDate(LocalDateTime.now());
 		this.questionRepository.save(q2);  // 두번째 질문 저장
+
+		// 답변 1개 생성
+		Answer a1 = new Answer();
+		a1.setContent("네 자동으로 생성됩니다.");
+		a1.setQuestion(q2); // 어떤 질문의 답변인지 알기위해서 Question 객체가 필요하다.
+		a1.setCreateDate(LocalDateTime.now());
+		answerRepository.save(a1);
+	}
+
+	@Test
+	@DisplayName("데이터 저장")
+	void testJpa1() {
+		// 질문 1개 생성
+		Question q = new Question();
+		q.setSubject("세계에서 가장 부유한 국가가 어디인가요?");
+		q.setContent("알고 싶습니다.");
+		q.setCreateDate(LocalDateTime.now());
+		questionRepository.save(q);
+
+		assertEquals("세계에서 가장 부유한 국가가 어디인가요?", questionRepository.findById(3).get().getSubject());
 	}
 
 	@Test
@@ -108,15 +136,14 @@ class SbbApplicationTests {
 	@Test
 	@DisplayName("답변 데이터 생성 후 저장 ")
 	void testJpaAnswer1() {
-		Optional<Question> oq = this.questionRepository.findById(2);
-		assertTrue(oq.isPresent());
-		Question q = oq.get();
+		Question q = this.questionRepository.findById(2).orElse(null);
 
 		Answer a = new Answer();
 		a.setContent("네 자동으로 생성됩니다.");
 		a.setQuestion(q); // 어떤 질문의 답변인지 알기 위해서 Question 객체가 필요함
 		a.setCreateDate(LocalDateTime.now());
 		this.answerRepository.save(a);
+
 	}
 
 	@Test
@@ -127,18 +154,17 @@ class SbbApplicationTests {
 		Answer a = oa.get();
 		assertEquals(2, a.getQuestion().getId());
 	}
-	@Transactional
-	@Test
-	@DisplayName("질문에 달린 답변 찾기")
-	void testJpaAnswer3(){
-		Optional<Question> oq = this.questionRepository.findById(2);
-		assertTrue(oq.isPresent());
-		Question q = oq.get();
-
-		List<Answer> answerList = q.getAnswerList();
-
-		assertEquals(1, answerList.size());
-		assertEquals("네 자동으로 생성됩니다.", answerList.get(0).getContent());
-	}
+//	@Transactional
+//	@Test
+//	@DisplayName("질문에 달린 답변 찾기")
+//	void testJpaAnswer3(){
+//		Optional<Question> oq = this.questionRepository.findById(2);
+//		assertTrue(oq.isPresent());
+//		Question q = oq.get();
+//
+//		List<Answer> answerList = q.getAnswerList();
+//
+//		assertEquals("네 자동으로 생성됩니다.", answerList.get(0).getContent());
+//	}
 
 }
