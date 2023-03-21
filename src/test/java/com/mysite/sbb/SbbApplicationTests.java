@@ -54,6 +54,8 @@ class SbbApplicationTests {
 		a1.setQuestion(q2); // 어떤 질문의 답변인지 알기위해서 Question 객체가 필요하다.
 		a1.setCreateDate(LocalDateTime.now());
 		answerRepository.save(a1);
+
+		q2.getAnswerList().add(a1);
 	}
 
 	@Test
@@ -154,17 +156,17 @@ class SbbApplicationTests {
 		Answer a = oa.get();
 		assertEquals(2, a.getQuestion().getId());
 	}
-//	@Transactional
-//	@Test
-//	@DisplayName("질문에 달린 답변 찾기")
-//	void testJpaAnswer3(){
-//		Optional<Question> oq = this.questionRepository.findById(2);
-//		assertTrue(oq.isPresent());
-//		Question q = oq.get();
-//
-//		List<Answer> answerList = q.getAnswerList();
-//
-//		assertEquals("네 자동으로 생성됩니다.", answerList.get(0).getContent());
-//	}
+	@Transactional
+	@Test
+	@DisplayName("질문에 달린 답변 찾기")
+	void testJpaAnswer3(){
+		Optional<Question> oq = this.questionRepository.findById(2);
+		assertTrue(oq.isPresent());
+		Question q = oq.get();
+
+		List<Answer> answerList = q.getAnswerList();
+
+		assertEquals("네 자동으로 생성됩니다.", answerList.get(0).getContent());
+	}
 
 }
