@@ -24,11 +24,16 @@ public class SecurityConfig {
                 .csrf().ignoringRequestMatchers(
                         new AntPathRequestMatcher("/h2-console/**"))
                 .and()
-                .headers()
-                .addHeaderWriter(new XFrameOptionsHeaderWriter(
+                    .headers()
+                    .addHeaderWriter(new XFrameOptionsHeaderWriter(
                         XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
                 .and() // 로그인 페이지 URL 등록
-                .formLogin().loginPage("/user/login").defaultSuccessUrl("/")
+                    .formLogin().loginPage("/user/login").defaultSuccessUrl("/")
+                .and()  // 로그아웃
+                    .logout()
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
+                    .logoutSuccessUrl("/")
+                    .invalidateHttpSession(true) // 로그아웃 시 생성된 사용자 세션 삭제
         ;
         return http.build();
     }
