@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UserController {
     private final UserService userService;
 
-
-
     @GetMapping("/signup")
     public String signup(UserCreateForm userCreateForm){
         return "signup_form";
@@ -35,7 +33,7 @@ public class UserController {
 
         // 사용자 ID, 이메일 중복 시 예외 발생 -> 오류 표시
         try{
-            userService.create(userCreateForm.getUsername(), userCreateForm.getEmail(), userCreateForm.getPassword1());
+            userService.create(userCreateForm.getUsername(), userCreateForm.getPassword1(), userCreateForm.getEmail());
         }catch (DataIntegrityViolationException e) {
             e.printStackTrace();
             bindingResult.reject("signupFailed","이미 등록된 사용자입니다.");
