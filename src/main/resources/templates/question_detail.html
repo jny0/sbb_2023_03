@@ -33,8 +33,7 @@
                    class="delete btn btn-sm btn-outline-secondary mx-2" sec:authorize="isAuthenticated()"
                    th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.author.username}"
                    th:text="삭제"></a>
-                <a href="javascript:void(0);" class="recommend btn btn-sm btn-outline-secondary"
-                   th:data-uri="@{|/question/vote/${question.id}|}">
+                <a th:href="@{|/question/vote/${question.id}|}" class=" btn btn-sm btn-outline-secondary">
                     추천
                     <span class="badge rounded-pill bg-success" th:text="${#lists.size(question.voter)}"></span>
                 </a>
@@ -74,8 +73,7 @@
                    class="delete btn btn-sm btn-outline-secondary mx-2" sec:authorize="isAuthenticated()"
                    th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
                    th:text="삭제"></a>
-                <a href="javascript:void(0);" class="recommend btn btn-sm btn-outline-secondary"
-                   th:data-uri="@{|/answer/vote/${answer.id}|}">
+                <a th:href="@{|/answer/vote/${answer.id}|}" class=" btn btn-sm btn-outline-secondary">
                     추천
                     <span class="badge rounded-pill bg-success" th:text="${#lists.size(answer.voter)}"></span>
                 </a>
