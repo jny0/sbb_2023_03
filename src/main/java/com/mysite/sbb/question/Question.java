@@ -40,4 +40,7 @@ public class Question {
 
     @ManyToMany
     Set<SiteUser> voter; // 추천인은 중복되면 안되기 때문에 Set으로 설정
+
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private int view;
 }
